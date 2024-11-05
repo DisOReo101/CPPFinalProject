@@ -4,10 +4,12 @@
 #include <iomanip>
 #include <random>
 
+#include "GridVisualizer.h"
+
 using namespace std;
 const string wordlist_filename{"fiveLetterWords.txt"};
 
-int Grid::currentTry = 0;
+int Grid::Tries = 0;
 
 Grid::Grid()
 {
@@ -21,6 +23,7 @@ Grid::Grid()
         //Allocate Y dimension
         wordleGrid[i] = new char[5];
     }
+    Visualizer = new GridVisualizer(this);
     ResetGrid();
 }
 
@@ -31,10 +34,13 @@ Grid::~Grid()
         delete [] wordleGrid[i];
     }
     delete [] wordleGrid;
+    
+    delete Visualizer;
 }
 
-void Grid::AddWord(const std::string& InWord)
+void Grid::AddWordToGrid(const std::string& InWord)
 {
+    //Check if tries to exceed grid
     if (GetTryCount() >= 6)
         return;
 
@@ -55,11 +61,11 @@ void Grid::AddWord(const std::string& InWord)
             else
                 match = EMatchType::NotCorrect;
         }
-        matchAttempts[currentTry][i] = match;
-        wordleGrid[currentTry][i] = InWord[i];
+        matchAttempts[Tries][i] = match;
+        wordleGrid[Tries][i] = InWord[i];
     }
     hasMatchedWord |= bFoundMatch;
-    IncrementTryCount();
+    DrawGrid();
 }
 
 void Grid::SetWord(const std::string& InWord, bool ShouldReset)
@@ -99,22 +105,39 @@ void Grid::ResetGrid()
         }
     }
     hasMatchedWord = false;
+    RandomizeWord();
     ResetTryCount();
+}
+
+void Grid::DrawGrid() const
+{
+    Visualizer->UpdateVisual();
 }
 
 void Grid::IncrementTryCount()
 {
-    currentTry++;
+    if(Tries++ > 5)
+        Tries = 5;
 }
 
 void Grid::ResetTryCount()
 {
-    currentTry = 0;
+    Tries = 0;
 }
 
 int Grid::GetTryCount()
 {
-    return currentTry;
+    return Tries;
+}
+
+bool Grid::HasAnymoreTries()
+{
+    return Tries < 6;
+}
+
+int Grid::GetMaxTryCount()
+{
+    return 6;
 }
 
 char Grid::GetGridCellCharacter(const int X, const int Y) const

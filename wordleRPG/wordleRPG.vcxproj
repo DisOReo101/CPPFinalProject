@@ -154,15 +154,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameData.cpp" />
     <ClCompile Include="GridVisualizer.cpp" />
     <ClCompile Include="Grid.cpp" />
-    <ClCompile Include="Word.cpp" />
+    <ClCompile Include="GameReport.cpp" />
     <ClCompile Include="wordleRPG.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameData.h" />
     <ClInclude Include="GridVisualizer.h" />
     <ClInclude Include="Grid.h" />
-    <ClInclude Include="Word.h" />
+    <ClInclude Include="GameReport.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
