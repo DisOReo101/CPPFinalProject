@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <random>
 
 #include "GridVisualizer.h"
@@ -38,60 +39,82 @@ Grid::~Grid()
     delete Visualizer;
 }
 
+std::string Grid::ToLower(const string& InString)
+{
+    string s = InString;
+    transform(s.begin(), s.end(), s.begin(), [
+              ](unsigned char c){return tolower(c);});
+    return s;
+}
+
 void Grid::AddWordToGrid(const std::string& InWord)
 {
-    //Check if tries to exceed grid
+    //Check if there's anymore tries
     if (GetTryCount() >= 6)
         return;
 
+    //Lower case the provided characters
+    const string lowerString = ToLower(InWord);
+
+    //Check each character.
     bool bFoundMatch = true;
     for (int i = 0; i < 5; i++)
     {
         EMatchType match;
-        if (wordleWord[i] == InWord[i])
+        if (wordleWord[i] == lowerString[i])
         {
             match = EMatchType::Correct;
         }
         else
         {
             bFoundMatch = false;
-            if (wordleWord.find(InWord[i]) != std::string::npos)
+            if (wordleWord.find(lowerString[i]) != std::string::npos)
                 match = EMatchType::WrongSpot;
         
             else
                 match = EMatchType::NotCorrect;
         }
-        matchAttempts[Tries][i] = match;
-        wordleGrid[Tries][i] = InWord[i];
-    }
-    hasMatchedWord |= bFoundMatch;
-    DrawGrid();
-}
 
-void Grid::SetWord(const std::string& InWord, bool ShouldReset)
-{
-    wordleWord = InWord;
-    if(ShouldReset)
-        ResetGrid();
+        //Record character and match type 
+        matchAttempts[Tries][i] = match;
+        wordleGrid[Tries][i] = lowerString[i];
+    }
+    //Bitwise operator. Stay true until reset.
+    hasMatchedWord |= bFoundMatch;
+
+    //Update gride.
+    DrawGrid();
 }
 
 void Grid::RandomizeWord()
 {
-    //Open file
-    fstream wordListFile{wordlist_filename, ios_base::in};
-    string line;
-    //Generate random num
-    static random_device myEngine;
-    static uniform_int_distribution<int> randomInt(0, 5756);
-    const int index = randomInt(myEngine);
+    try
+    {
+        //Open file
+        fstream fileObj{wordlist_filename, ios_base::in};
+        if(fileObj.fail())
+        {
+            throw fstream::failure{"Failed to find " + wordlist_filename};
+        }
+        string line;
+        //Generate random num
+        static random_device myEngine;
+        static uniform_int_distribution<int> randomInt(0, 5756);
+        const int index = randomInt(myEngine);
 
-    //Set byte on file. 
-    wordListFile.seekg(static_cast<long>(index * 7), ios_base::beg);
-    getline(wordListFile, line);
+        //Set starting point in file obj. 
+        fileObj.seekg(static_cast<long>(index * 7), ios_base::beg);
+        getline(fileObj, line);
 
-    //Close file. 
-    wordListFile.close();
-    wordleWord = line;
+        //Close file. 
+        fileObj.close();
+        wordleWord = line;
+    }
+    catch (fstream::failure& f)
+    {
+        std::cout << "::RandomizeWord() Unexpected Error!\n";
+        std::cout << f.what() << endl;
+    }
 }
 
 void Grid::ResetGrid()

@@ -14,13 +14,17 @@ enum class EMatchType : unsigned char
 
 class Grid
 {
-    char** wordleGrid;
     GridVisualizer* Visualizer;
-    
+    //2D letter array
+    char** wordleGrid;
+    //Match Type 2D Grid
     EMatchType matchAttempts[6][5];
-    std::string wordleWord;
-    bool hasMatchedWord;
 
+    //Chosen word
+    std::string wordleWord;
+    
+    bool hasMatchedWord;
+    //Tries
     static int Tries;
     
 public:
@@ -31,11 +35,20 @@ public:
     }
     ~Grid();
     
-    void AddWordToGrid(const std::string& InWord);
-    void SetWord(const std::string& InWord, bool ShouldReset = true);
-    void RandomizeWord();
-    void ResetGrid();
+    /**
+     *  Convert string to all lower case
+     * @param InString String to convert to lowercase
+     * @return Lower case string
+     */
+    static std::string ToLower(const std::string& InString);
 
+    void AddWordToGrid(const std::string& InWord);
+    /**
+     * Set the random word from internal file.
+     */
+    void RandomizeWord();
+    
+    void ResetGrid();
     void DrawGrid() const;
     
     static void IncrementTryCount();
@@ -50,6 +63,7 @@ public:
 
     /**
      * Only use for debugging purposes!
+     * Get Chosen word
      * 
      * @param o output stream
      * @param g This grid object

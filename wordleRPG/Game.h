@@ -1,26 +1,24 @@
 ﻿#pragma once
 #include <string>
 
-class GameDataHandler;
 class Grid;
 
+/**
+ * Main game object. 
+ */
 class Game
 {
     Grid* gameGrid;
-    GameDataHandler* gameDataHandler;
-    
-    int playerScore{0};
+
 public:
     Game();
     ~Game();
-    
     void Quit();
     void Run();
-    
-    void SeeRules();
+
+    static void DisplayRules();
     void Play();
-    void SeeReport();
-    void Save();
+    static void DisplayReport();
 
 private:
     static void ScoreMessageToUser(const int Score, std::string& OUTMsg);

@@ -4,22 +4,17 @@
 #include <iostream>
 #include <windows.h>
 #include "Grid.h"
+#include "ConsoleHelper.h"
 
 using namespace std;
-
-constexpr int
-GREEN = 0x27,
-YELLOW = 0x67,
-GRAY = 0x87,
-RESET = 0x07;
-
-const HANDLE COUT_H = GetStdHandle(STD_OUTPUT_HANDLE);
 
 
 GridVisualizer::GridVisualizer(Grid* NewGrid)
 {
     OwningGrid = NewGrid;
 }
+
+
 
 void GridVisualizer::UpdateVisual()
 {
@@ -33,30 +28,33 @@ void GridVisualizer::UpdateVisual()
     {
         for(int j = 0; j < 5; j++)
         {
-            SetConsoleTextAttribute(COUT_H, RESET);
+            ConsoleHelper::SetConsoleTextColor(RESET);
+            
             cout << '|' << setw(CELL_PADDING);
-            SetConsoleTextAttribute(COUT_H, GetTextColor(OwningGrid->GetGridCellMatch(i, j)));
+            SetTextColorByType(OwningGrid->GetGridCellMatch(i, j));
             cout << ' ' << OwningGrid->GetGridCellCharacter(i, j) << setw(CELL_PADDING) << ' ';
             
         }
-        SetConsoleTextAttribute(COUT_H, RESET);
+        ConsoleHelper::SetConsoleTextColor(RESET);
         cout<<'|' << '\n';
         cout<< setfill('-') << setw(COL_SIZE) << " \n" << setfill(' ');
     }
 }
 
-unsigned short GridVisualizer::GetTextColor(const EMatchType Match)
+void GridVisualizer::SetTextColorByType(const EMatchType Match)
 {
     switch(Match)
     {
     case EMatchType::Correct:
-        return GREEN;
+        ConsoleHelper::SetConsoleTextColor(GREEN);
+        break;
     case EMatchType::WrongSpot:
-        return YELLOW;
+        ConsoleHelper::SetConsoleTextColor(YELLOW);
+        break;
     case EMatchType::NotCorrect:
-        return GRAY;
+        ConsoleHelper::SetConsoleTextColor(GRAY);
+        break;
     case EMatchType::NotMatch:
-        return RESET;
+        ConsoleHelper::SetConsoleTextColor(RESET);
     }
-    return RESET;
 }
